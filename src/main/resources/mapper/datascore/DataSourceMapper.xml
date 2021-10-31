@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mybatisdemo.mapper.DataSourceMapper">
+
+    <select id="getSysTableInfoPage" resultType="com.example.mybatisdemo.vo.datasource.table.SysTableVO">
+        SELECT
+                sys_table.TABLE_SCHEMA as tableSchema,
+                sys_table.TABLE_NAME as tableName,
+                sys_table.`ENGINE` as `engine`,
+                sys_table.TABLE_ROWS as tableRows,
+                sys_table.AVG_ROW_LENGTH as avgRowLength,
+                sys_table.DATA_LENGTH as dataLength,
+                sys_table.MAX_DATA_LENGTH as maxDataLength,
+                sys_table.INDEX_LENGTH as indexLength,
+                sys_table.DATA_FREE as dataFree,
+                sys_table.AUTO_INCREMENT as autoIncrement,
+                sys_table.CREATE_TIME as createTime,
+                sys_table.UPDATE_TIME as updateTime,
+                sys_table.TABLE_COMMENT as tableComment
+        FROM INFORMATION_SCHEMA.TABLES sys_table
+        <where>
+            <!-- 数据库名称 不能为空，避免扫全表，导致响应时间过长报错 -->
+            <if test="dto.tableSchema!=null and dto.tableSchema!=''">
+                and sys_table.TABLE_SCHEMA = #{dto.tableSchema, jdbcType=VARCHAR}
+            </if>
+        </where>
+
+    </select>
+</mapper>

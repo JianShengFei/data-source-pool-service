@@ -1,0 +1,84 @@
+server:
+  servlet:
+    context-path: /
+  port: 8081
+
+
+spring:
+  application:
+    name: data-source-pool-service
+  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://1.116.164.195:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+#    username: root
+#    password: 1213123123
+    dynamic:
+      druid:
+        initialSize: 1
+        minIdle: 1
+        maxActive: 1
+        maxWait: 60000
+        timeBetweenEvictionRunsMillis: 60000
+        minEvictableIdleTimeMillis: 300000
+        validationQuery: select 'x'
+        testWhileIdle: true
+        testOnBorrow: false
+        testOnReturn: false
+        poolPreparedStatements: false
+        filters: stat,wall
+      primary: master
+      datasource:
+        master:
+          url: jdbc:mysql://1.116.164.195:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+          username: root
+          password: 1213123123
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          type: com.alibaba.druid.pool.DruidDataSource
+          druid: # 主库的druid配置,具有覆盖性
+            initialSize: 1
+            minIdle: 1
+            maxActive: 2
+            maxWait: 60000
+            timeBetweenEvictionRunsMillis: 60000
+            minEvictableIdleTimeMillis: 300000
+            validationQuery: select 'x'
+            testWhileIdle: true
+            testOnBorrow: false
+            testOnReturn: false
+            poolPreparedStatements: false
+            maxOpenPreparedStatements: 20
+            filter:
+              stat:
+                enabled: true
+                log-slow-sql: true
+                slow-sql-millis: 3000
+              wall:
+                enabled: true
+                log-violation: true
+                throw-exception: false
+                config:
+                  delete-where-none-check: true
+
+
+swagger:
+  enable: true
+  application-name: ${spring.application.name}
+  application-version: 1.0
+  application-description: 码农运维开发脚手架系统-> 目前规划的主要功能有：数据源管理，代码生成管理(基于数据源管理功能)，数据源数据迁移(在两个数据源之间进行数据迁移)。。。
+  try-host: http://localhost:${server.port}
+
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    auto-mapping-behavior: full
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath*:mapper/**/*Mapper.xml
+  global-config:
+    db-config:
+      logic-not-delete-value: 1
+      logic-delete-value: 0
+
+logging:
+  level:
+    com.horse.dynamic: debug
