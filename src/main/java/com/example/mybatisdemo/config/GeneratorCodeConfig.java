@@ -25,7 +25,10 @@ public class GeneratorCodeConfig {
 
 
     public static void main(String[] args) {
+        generateCode();
+    }
 
+    public static void generateCode() {
         FastAutoGenerator.create("jdbc:mysql://1.116.164.195:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true",
                         "root",
                         "1213123123")
@@ -53,6 +56,7 @@ public class GeneratorCodeConfig {
                 })
                 .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();
+
     }
 
     // 处理表前缀

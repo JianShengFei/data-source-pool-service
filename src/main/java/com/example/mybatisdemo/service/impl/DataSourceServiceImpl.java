@@ -78,6 +78,13 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, SysData
     }
 
     @Override
+    public SysDataSource getDataSourceByPoolName(String poolName) {
+        LambdaQueryWrapper<SysDataSource> q = new LambdaQueryWrapper<>();
+        q.eq(SysDataSource::getPoolName, poolName);
+        return this.getOne(q);
+    }
+
+    @Override
     public void saveSysDataScores(List<SysDataSource> dos) {
         if(CollectionUtil.isEmpty(dos)) {
             return;

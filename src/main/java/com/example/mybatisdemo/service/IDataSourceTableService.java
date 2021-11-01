@@ -5,6 +5,8 @@ import com.example.mybatisdemo.dto.datasource.table.SysTableInfoQueryDTO;
 import com.example.mybatisdemo.vo.datasource.table.SysTableVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @author jianshengfei
  * @version 1.0.0
@@ -20,5 +22,11 @@ public interface IDataSourceTableService {
      * @return
      */
     IPage<SysTableVO> getSysTableInfoPage(SysTableInfoQueryDTO dto);
+
+    /**
+     * 根据选择的数据源下的表名生成代码
+     * @param dataSource
+     */
+    void generateCodeByDataSource(String dataSource, List<String> tableNames);
 
 }

@@ -40,6 +40,13 @@ public interface IDataSourceService extends IService<SysDataSource> {
     Boolean saveSysDataScore(SysDataSource dto);
 
     /**
+     * 根据数据源名称获取数据源
+     * @param poolName
+     * @return
+     */
+    SysDataSource getDataSourceByPoolName(String poolName);
+
+    /**
      * 批量保存数据源
      * @param dos
      */
