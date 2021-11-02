@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.generator.FastAutoGenerator;
 import com.baomidou.mybatisplus.generator.config.*;
 import com.baomidou.mybatisplus.generator.engine.FreemarkerTemplateEngine;
+import com.example.mybatisdemo.dto.datasource.table.GenerateCodeDTO;
+import com.example.mybatisdemo.entity.SysDataSource;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,28 +26,27 @@ public class GeneratorCodeConfig {
     private static final String packPath = "D://code";
 
 
-    public static void main(String[] args) {
-        generateCode();
-    }
+//    public static void main(String[] args) {
+//        generateCode();
+//    }
 
-    public static void generateCode() {
-        FastAutoGenerator.create("jdbc:mysql://1.116.164.195:3306/demo?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true",
-                        "root",
-                        "1213123123")
+    public static void generateCode(GenerateCodeDTO dto, SysDataSource dataSource) {
+        FastAutoGenerator.create(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword())
                 .globalConfig((scanner, builder) -> {
-                    builder.author(getAuthor(scanner.apply("请输入作者名称？(输入default 默认jianshengfei)"))) // 设置作者
+                    builder.author(getAuthor(dto.getAuthor())) // 设置作者
                             .enableSwagger() // 开启 swagger 模式
                             .fileOverride() // 覆盖已生成文件
-                            .outputDir(packPath); // 指定输出目录
+                            .outputDir(getOutputPath(dto.getOutputPath())); // 指定输出目录
                 })
                 .packageConfig((scanner, builder) -> {
-                    builder.parent(scanner.apply("请输入包名？")) // 设置父包名
-                            .moduleName(scanner.apply("请输入父包模块名？")) // 设置父包模块名
-                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, packPath)); // 设置mapperXml生成路径
+                    builder.parent(dto.getParentPackageName()) // 设置父包名
+                            .moduleName(dto.getModuleName()) // 设置父包模块名
+                            .pathInfo(Collections.singletonMap(OutputFile.mapperXml, getOutputPath(dto.getOutputPath()))) // 设置mapperXml生成路径
+                    ;
                 })
                 .strategyConfig((scanner, builder) -> {
-                    builder.addInclude(getTables(scanner.apply("请输入表名，多个英文逗号分隔？所有输入 all"))) // 设置需要生成的表名
-                            .addTablePrefix(getTablePrefix(scanner.apply("请输入过滤的表前缀？(多个逗号分隔, 默认添加下划线)"))) // 设置过滤表前缀
+                    builder.addInclude(getTables(dto.getTables())) // 设置需要生成的表名
+                            .addTablePrefix(getTablePrefix(dto.getTablePrefix())) // 设置过滤表前缀
                             .controllerBuilder() // 控制层策略配置
 //                            .superClass(BaseController)
                             .enableRestStyle()  // 开启生成@RestController 控制器
@@ -54,16 +55,16 @@ public class GeneratorCodeConfig {
                             .enableLombok() //开启Lombok注解
                     ;
                 })
-                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
+//                .templateEngine(new FreemarkerTemplateEngine()) // 使用Freemarker引擎模板，默认的是Velocity引擎模板
                 .execute();
 
     }
 
     // 处理表前缀
     private static String getTablePrefix(String tablePrefixes) {
-//        if(StringUtils.isBlank(tablePrefixes)) {
-//            return "sys_";
-//        }
+        if(StringUtils.isBlank(tablePrefixes)) {
+            return "sys_";
+        }
         List<String> collect = Arrays.stream(tablePrefixes.split(",")).collect(Collectors.toList());
         collect.forEach(e -> e += "_");
         return collect.stream().collect(Collectors.joining(","));
@@ -77,5 +78,9 @@ public class GeneratorCodeConfig {
     // 处理 all 情况
     private static List<String> getTables(String tables) {
         return "all".equals(tables) ? Collections.emptyList() : Arrays.asList(tables.split(","));
+    }
+
+    private static String getOutputPath(String path) {
+        return StringUtils.isNotBlank(path) ? path : packPath;
     }
 }

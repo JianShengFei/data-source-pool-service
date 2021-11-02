@@ -19,9 +19,9 @@
                 sys_table.TABLE_COMMENT as tableComment
         FROM INFORMATION_SCHEMA.TABLES sys_table
         <where>
-            <!-- 数据库名称 不能为空，避免扫全表，导致响应时间过长报错？？？ -->
-            <if test="dto.tableSchema!=null and dto.tableSchema!=''">
-                and sys_table.TABLE_SCHEMA = #{dto.tableSchema, jdbcType=VARCHAR}
+            and sys_table.TABLE_SCHEMA = (SELECT DATABASE())
+            <if test="dto.tableName != null and dto.tableName != ''">
+                and sys_table.TABLE_NAME = #{dto.tableName}
             </if>
         </where>
 

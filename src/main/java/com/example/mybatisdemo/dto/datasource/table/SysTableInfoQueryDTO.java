@@ -22,9 +22,7 @@ public class SysTableInfoQueryDTO extends BasePageDTO {
     @NotBlank(message = "数据源名称 不能为空")
     private String dataSource;
 
-    @ApiModelProperty("数据库名称")
-    @NotBlank(message = "数据库名称 不能为空")
-    private String tableSchema;
-
+    @ApiModelProperty("表名")
+    private String tableName;
 
 }

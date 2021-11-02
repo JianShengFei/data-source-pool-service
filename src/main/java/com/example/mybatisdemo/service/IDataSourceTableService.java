@@ -1,10 +1,12 @@
 package com.example.mybatisdemo.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.example.mybatisdemo.dto.datasource.table.GenerateCodeDTO;
 import com.example.mybatisdemo.dto.datasource.table.SysTableInfoQueryDTO;
 import com.example.mybatisdemo.vo.datasource.table.SysTableVO;
 import org.apache.ibatis.annotations.Param;
 
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -24,9 +26,10 @@ public interface IDataSourceTableService {
     IPage<SysTableVO> getSysTableInfoPage(SysTableInfoQueryDTO dto);
 
     /**
-     * 根据选择的数据源下的表名生成代码
+     * 根据选择的表名生成代码
+     * @param dto
      * @param dataSource
      */
-    void generateCodeByDataSource(String dataSource, List<String> tableNames);
+    void generateCodeByDataSource(GenerateCodeDTO dto, String dataSource);
 
 }

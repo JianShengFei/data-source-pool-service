@@ -4,6 +4,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.TableInfo;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.example.mybatisdemo.dto.datasource.table.GenerateCodeDTO;
 import com.example.mybatisdemo.dto.datasource.table.SysTableInfoQueryDTO;
 import com.example.mybatisdemo.entity.SysDataSource;
 import com.example.mybatisdemo.mapper.DataSourceMapper;
@@ -41,7 +42,6 @@ public class SysTableTest {
     @Test
     public void test01() {
         SysTableInfoQueryDTO dto = new SysTableInfoQueryDTO();
-        dto.setTableSchema("demo");
         IPage<SysTableVO> tableInfoPage = dataSourceMapper.getSysTableInfoPage(new Page(1, 10), dto);
         System.out.println(JSONUtil.toJsonStr(tableInfoPage));
     }
@@ -95,9 +95,9 @@ public class SysTableTest {
         DataSource dataSource = dataSourceService.getSysDataSource("jsf_test_1");
         Connection connection = dataSource.getConnection();
 
-        List<String> allTables = getAllTables(connection, null);
-        List<String> primaryKeys = getPrimaryKeys(connection, "tb_user_info");
-        List<Map<String, String>> allColumns = getAllColumns(connection, "tb_user_info");
+        List<String> allTables = getAllTables(connection, "%");
+        List<String> primaryKeys = getPrimaryKeys(connection, "test_1");
+        List<Map<String, String>> allColumns = getAllColumns(connection, "test_1");
 
         System.out.println("all tables:");
         allTables.stream().forEach(table -> System.out.println(table + "\n"));
@@ -127,7 +127,8 @@ public class SysTableTest {
      */
     public static List<String> getAllTables(Connection connection, String tableNamePattern) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet tables = metaData.getTables(null, null, tableNamePattern, new String[]{"TABLE"});
+        ResultSet tables = metaData.getTables(null, "jsf_test_1", tableNamePattern, new String[]{"TABLE"});
+        System.out.println(JSONUtil.toJsonStr(tables));
         List<String> tableList = new ArrayList<>();
         while (tables.next()) {
             String tableName = tables.getString(3);
@@ -140,13 +141,13 @@ public class SysTableTest {
      * get all PrimaryKeys from DataSource - Connection - DatabaseMetaData
      *
      * @param connection
-     * @param tableNamePattern
+     * @param tableName
      * @return
      * @throws SQLException
      */
-    public static List<String> getPrimaryKeys(Connection connection, String tableNamePattern) throws SQLException {
+    public static List<String> getPrimaryKeys(Connection connection, String tableName) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
-        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableNamePattern);
+        ResultSet primaryKeys = metaData.getPrimaryKeys(null, null, tableName);
         List<String> primaryKeyList = new ArrayList<>();
         while (primaryKeys.next()) {
             String columnName = primaryKeys.getString("COLUMN_NAME");
@@ -199,5 +200,17 @@ public class SysTableTest {
         return columnList;
     }
 
+
+    @Test
+    public void testAutoGen() {
+        GenerateCodeDTO dto = new GenerateCodeDTO();
+        dto.setAuthor("jianshengfei");
+        dto.setModuleName("test");
+        dto.setParentPackageName("com");
+        dto.setTablePrefix("sys");
+        dto.setTables("test_1, test_2");
+
+        dataSourceTableService.generateCodeByDataSource(dto, "jsf_test_1");
+    }
 
 }
